@@ -23,5 +23,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run CI Agent
+        env:
+          PYTHONPATH: .
         run: |
           python agent.py
