@@ -1,23 +1,7 @@
 import subprocess
 import sys
 from pathlib import Path
-from ai_helper import ask_ai
-
-def auto_fix_simple_issue():
-    """
-    Example automatic change:
-    Ensure a VERSION file exists.
-    """
-    version_file = Path("VERSION")
-
-    if not version_file.exists():
-        print("🛠 Creating VERSION file")
-        version_file.write_text("1.0.0\n")
-        return True
-
-    print("ℹ️ No auto changes needed")
-    return False
-
+from ai_helper import apply_ai_fix
 
 def run_tests():
     result = subprocess.run(
@@ -25,10 +9,30 @@ def run_tests():
         capture_output=True,
         text=True
     )
+    return result.returncode, result.stdout + result.stderr
 
-    if result.returncode != 0:
-        fix = ask_ai(result.stdout + result.stderr)
-        print("AI suggestion:", fix)
-        return False
+def commit_and_push():
+    subprocess.run(["git", "add", "."])
+    subprocess.run(["git", "commit", "-m", "ci(agent): auto-fix test failure"])
+    subprocess.run(["git", "push"])
 
-    return True
+if __name__ == "__main__":
+    print("▶ Running tests")
+
+    code, logs = run_tests()
+
+    if code == 0:
+        print("✅ Tests passed")
+        sys.exit(0)
+
+    print("❌ Tests failed")
+
+    fixed = apply_ai_fix(logs)
+
+    if fixed:
+        print("🔁 AI applied fix, committing changes")
+        commit_and_push()
+        sys.exit(1)  # Fail this run, next run will re-test
+
+    print("🚫 No fix applied, stopping pipeline")
+    sys.exit(1)
