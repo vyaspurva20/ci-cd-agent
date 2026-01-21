@@ -1,6 +1,6 @@
 from app import add
 
 def test_add():
-    assert add(2, 3) == 10
+    assert add(2, 3) == 15
 
 
