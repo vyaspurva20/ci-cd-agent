@@ -13,6 +13,14 @@ def run_tests():
 
 def git_commit_and_push():
     try:
+        print("🔄 Pulling latest changes before commit...")
+        subprocess.run(
+            ["git", "pull", "--rebase"],
+            check=True,
+            capture_output=True,
+            text=True
+        )
+
         subprocess.run(["git", "status"], check=True)
         subprocess.run(["git", "add", "."], check=True)
 
