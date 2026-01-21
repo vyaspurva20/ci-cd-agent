@@ -1,6 +1,7 @@
 import subprocess
 import sys
 from pathlib import Path
+from ai_helper import ask_ai
 
 def auto_fix_simple_issue():
     """
@@ -19,27 +20,15 @@ def auto_fix_simple_issue():
 
 
 def run_tests():
-    print("▶ Running tests")
     result = subprocess.run(
         ["pytest"],
         capture_output=True,
         text=True
     )
 
-    print(result.stdout)
-    print(result.stderr)
+    if result.returncode != 0:
+        fix = ask_ai(result.stdout + result.stderr)
+        print("AI suggestion:", fix)
+        return False
 
-    return result.returncode == 0
-
-
-if __name__ == "__main__":
-    changed = auto_fix_simple_issue()
-
-    if not run_tests():
-        print("❌ Tests failed")
-        sys.exit(1)
-
-    print("✅ Tests passed")
-
-    if changed:
-        print("📌 Code was changed by agent")
+    return True
