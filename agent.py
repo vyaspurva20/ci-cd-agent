@@ -11,34 +11,28 @@ def run_tests():
     )
     return result.returncode, result.stdout + result.stderr
 
-def commit_and_push():
-    subprocess.run(["git", "status"], check=True)
-subprocess.run(["git", "add", "."], check=True)
+def git_commit_and_push():
+    try:
+        subprocess.run(["git", "status"], check=True)
+        subprocess.run(["git", "add", "."], check=True)
 
-subprocess.run(
-    ["git", "commit", "-m", "ci(agent): auto-fix test failure"],
-    check=True
-)
+        subprocess.run(
+            ["git", "commit", "-m", "ci(agent): auto-fix test failure"],
+            check=True
+        )
 
-subprocess.run(["git", "push"], check=True)
+        subprocess.run(
+            ["git", "push"],
+            check=True,
+            capture_output=True,
+            text=True
+        )
 
-if __name__ == "__main__":
-    print("▶ Running tests")
+        print("✅ Auto-fix committed and pushed successfully")
 
-    code, logs = run_tests()
+    except subprocess.CalledProcessError as e:
+        print("❌ Git operation failed")
+        print("STDOUT:", e.stdout)
+        print("STDERR:", e.stderr)
+        raise
 
-    if code == 0:
-        print("✅ Tests passed")
-        sys.exit(0)
-
-    print("❌ Tests failed")
-
-    fixed = apply_ai_fix(logs)
-
-    if fixed:
-        print("🔁 AI applied fix, committing changes")
-        commit_and_push()
-        sys.exit(1)  # Fail this run, next run will re-test
-
-    print("🚫 No fix applied, stopping pipeline")
-    sys.exit(1)
