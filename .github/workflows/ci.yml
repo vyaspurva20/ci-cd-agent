@@ -4,34 +4,27 @@ on:
   push:
 
 permissions:
-  contents: write   # 🔥 REQUIRED for git push
+  contents: write   # REQUIRED so agent can push
 
 jobs:
   ci:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
       - name: Run pytest
         run: pytest
-        continue-on-error: true   # 🔑 KEY LINE
 
       - name: Run AI auto-fix agent
+        if: failure()
         run: python agent.py
-
-
-  cd:
-    runs-on: ubuntu-latest
-    needs: ci
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run CD Agent
-        run: python cd_agent.py
