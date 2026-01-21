@@ -13,11 +13,13 @@ def run_tests():
 
 def commit_and_push():
     subprocess.run(["git", "status"], check=True)
-    subprocess.run(["git", "add", "."], check=True)
-    subprocess.run(
+subprocess.run(["git", "add", "."], check=True)
+
+subprocess.run(
     ["git", "commit", "-m", "ci(agent): auto-fix test failure"],
     check=True
 )
+
 subprocess.run(["git", "push"], check=True)
 
 if __name__ == "__main__":
