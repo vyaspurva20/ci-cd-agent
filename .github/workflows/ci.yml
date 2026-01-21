@@ -1,4 +1,10 @@
+permissions:
+  contents: write
+
+
 name: CI CD Agent Pipeline
+
+
 
 on:
   push:
@@ -6,6 +12,8 @@ on:
 
 jobs:
   ci:
+    
+
     runs-on: ubuntu-latest
 
     steps:

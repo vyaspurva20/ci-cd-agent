@@ -12,9 +12,13 @@ def run_tests():
     return result.returncode, result.stdout + result.stderr
 
 def commit_and_push():
-    subprocess.run(["git", "add", "."])
-    subprocess.run(["git", "commit", "-m", "ci(agent): auto-fix test failure"])
-    subprocess.run(["git", "push"])
+    subprocess.run(["git", "status"], check=True)
+    subprocess.run(["git", "add", "."], check=True)
+    subprocess.run(
+    ["git", "commit", "-m", "ci(agent): auto-fix test failure"],
+    check=True
+)
+subprocess.run(["git", "push"], check=True)
 
 if __name__ == "__main__":
     print("▶ Running tests")
