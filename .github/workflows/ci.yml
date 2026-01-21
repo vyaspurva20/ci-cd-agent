@@ -24,6 +24,14 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: pytest
 
+      - name: Run AI auto-fix agent
+  if: failure()
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run: |
+    python agent.py
+
+
   cd:
     needs: ci
     runs-on: ubuntu-latest
