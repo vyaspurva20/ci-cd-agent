@@ -1,4 +1,4 @@
-name: CI Agent Pipeline
+name: CI CD Agent Pipeline
 
 on:
   push:
@@ -27,3 +27,20 @@ jobs:
           PYTHONPATH: .
         run: |
           python agent.py
+
+  cd:
+    runs-on: ubuntu-latest
+    needs: ci   # 👈 CD runs ONLY if CI passes
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Run CD Agent
+        run: |
+          python cd_agent.py
