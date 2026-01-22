@@ -3,4 +3,6 @@ __pycache__/
 *.pyc
 
 # Deployment artifacts
-deploy/
+# Ignore deployment artifacts, not scripts
+deploy/deployed.txt
+
